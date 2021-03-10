@@ -17,6 +17,8 @@ from unidecode import unidecode
 from . import toolbox
 from . import constants
 
+from itertools import permutations
+
 
 class QuickUMLS(object):
     """The main class to interact with the matcher.
@@ -301,9 +303,85 @@ class QuickUMLS(object):
                             if token.i not in skip_in_span).strip()
                 )
 
+  #  def _get_all_matches(self, ngrams):
+  #      matches = []
+  #      for start, end, ngram in ngrams:
+  #          ngram_normalized = ngram
+
+ #           if self.normalize_unicode_flag:
+  #              ngram_normalized = unidecode(ngram_normalized)
+
+            # make it lowercase
+  #          if self.to_lowercase_flag:
+  #              ngram_normalized = ngram_normalized.lower()
+
+            # If the term is all uppercase, it might be the case that
+            # no match is found; so we convert to lowercase;
+            # however, this is never needed if the string is lowercased
+            # in the step above
+    #        if not self.to_lowercase_flag and ngram_normalized.isupper() and not self.keep_uppercase:
+   #             ngram_normalized = ngram_normalized.lower()
+
+     #       prev_cui = None
+     #       ngram_cands = list(self.ss_db.get(ngram_normalized))
+
+     #       ngram_matches = []
+
+      #      for match in ngram_cands:
+      #          cuisem_match = sorted(self.cuisem_db.get(match))
+
+       #         match_similarity = toolbox.get_similarity(
+       #             x=ngram_normalized,
+       #             y=match,
+       #             n=self.ngram_length,
+       #             similarity_name=self.similarity_name
+       #         )
+
+        #        if match_similarity == 0:
+         #               continue
+
+        #        for cui, semtypes, preferred in cuisem_match:
+
+          #          if not self._is_ok_semtype(semtypes):
+           #             continue
+
+            #        if prev_cui is not None and prev_cui == cui:
+            #            if match_similarity > ngram_matches[-1]['similarity']:
+            #                ngram_matches.pop(-1)
+            #            else:
+            #                continue
+
+             #       prev_cui = cui
+
+             #       ngram_matches.append(
+              #          {
+              #              'start': start,
+              #              'end': end,
+              #              'ngram': ngram,
+              #              'term': toolbox.safe_unicode(match),
+              #              'cui': cui,
+              #              'similarity': match_similarity,
+              #              'semtypes': semtypes,
+              #              'preferred': preferred
+               #         }
+               #     )
+
+            #if len(ngram_matches) > 0:
+             #   matches.append(
+              #      sorted(
+               #         ngram_matches,
+                #        key=lambda m: m['similarity'] + m['preferred'],
+                 #       reverse=True
+                 #   )
+                #)
+        #return matches
+        
     def _get_all_matches(self, ngrams):
         matches = []
+        # add list to capture words that have already been reviewed
+        reviewed = []
         for start, end, ngram in ngrams:
+
             ngram_normalized = ngram
 
             if self.normalize_unicode_flag:
@@ -321,48 +399,72 @@ class QuickUMLS(object):
                 ngram_normalized = ngram_normalized.lower()
 
             prev_cui = None
-            ngram_cands = list(self.ss_db.get(ngram_normalized))
+
+            # generate permutations of length 2 or more for ngram
+            perms = []
+            if len(ngram_normalized.split())>1:
+
+                len_ngrams = len(ngram_normalized.split())
+                for i in range (2,len_ngrams+1):
+                    perms = perms + [' '.join(x) for x in list(permutations(ngram_normalized.split(),i))]
+            else:
+                perms.append(ngram_normalized)
 
             ngram_matches = []
 
-            for match in ngram_cands:
-                cuisem_match = sorted(self.cuisem_db.get(match))
+            # iterate through permutations
+            for w in perms:
+                # make spacy token for permutations
+                alt_doc = self.nlp(u'{}'.format(w.split()[0]))
 
-                match_similarity = toolbox.get_similarity(
-                    x=ngram_normalized,
-                    y=match,
-                    n=self.ngram_length,
-                    similarity_name=self.similarity_name
-                )
+                # if permutation already reviewed or doesn't pass validation, continue
+                if w in reviewed or self._is_valid_start_token(alt_doc[0])==False or self._is_valid_end_token(alt_doc[-1])==False:
+                #w.split()[0]) in self._stopwords or w.split()[-1]) in self._stopwords:
+                    continue
+                else:
+                    reviewed.append(w)
 
-                if match_similarity == 0:
-                        continue
+                ngram_cands = list(self.ss_db.get(w))
 
-                for cui, semtypes, preferred in cuisem_match:
+                for match in ngram_cands:
 
-                    if not self._is_ok_semtype(semtypes):
-                        continue
+                    cuisem_match = sorted(self.cuisem_db.get(match))
 
-                    if prev_cui is not None and prev_cui == cui:
-                        if match_similarity > ngram_matches[-1]['similarity']:
-                            ngram_matches.pop(-1)
-                        else:
+                    match_similarity = toolbox.get_similarity(
+                        x=w,#ngram_normalized,
+                        y=match,
+                        n=self.ngram_length,
+                        similarity_name=self.similarity_name
+                    )
+
+                    if match_similarity == 0:
                             continue
 
-                    prev_cui = cui
+                    for cui, semtypes, preferred in cuisem_match:
 
-                    ngram_matches.append(
-                        {
-                            'start': start,
-                            'end': end,
-                            'ngram': ngram,
-                            'term': toolbox.safe_unicode(match),
-                            'cui': cui,
-                            'similarity': match_similarity,
-                            'semtypes': semtypes,
-                            'preferred': preferred
-                        }
-                    )
+                        if not self._is_ok_semtype(semtypes):
+                            continue
+
+                        if prev_cui is not None and prev_cui == cui:
+                            if match_similarity > ngram_matches[-1]['similarity']:
+                                ngram_matches.pop(-1)
+                            else:
+                                continue
+
+                        prev_cui = cui
+
+                        ngram_matches.append(
+                            {
+                                'start': start,
+                                'end': end,
+                                'ngram': w,#ngram,
+                                'term': toolbox.safe_unicode(match),
+                                'cui': cui,
+                                'similarity': match_similarity,
+                                'semtypes': semtypes,
+                                'preferred': preferred
+                            }
+                        )
 
             if len(ngram_matches) > 0:
                 matches.append(
@@ -372,7 +474,9 @@ class QuickUMLS(object):
                         reverse=True
                     )
                 )
+
         return matches
+
 
     @staticmethod
     def _select_score(match):
