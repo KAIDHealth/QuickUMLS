@@ -414,12 +414,10 @@ class QuickUMLS(object):
 
             # iterate through permutations
             for w in perms:
-                # make spacy token for permutations
-                alt_doc = self.nlp(u'{}'.format(w.split()[0]))
-
-                # if permutation already reviewed or doesn't pass validation, continue
-                if w in reviewed or self._is_valid_start_token(alt_doc[0])==False or self._is_valid_end_token(alt_doc[-1])==False:
-                #w.split()[0]) in self._stopwords or w.split()[-1]) in self._stopwords:
+                
+                
+                if w in reviewed or w.split()[0] in self._stopwords or w.split()[-1] in self._stopwords:
+                
                     continue
                 else:
                     reviewed.append(w)
