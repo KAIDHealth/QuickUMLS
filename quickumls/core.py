@@ -18,6 +18,7 @@ from . import toolbox
 from . import constants
 
 from itertools import permutations
+from string import punctuation
 
 
 class QuickUMLS(object):
@@ -376,6 +377,12 @@ class QuickUMLS(object):
                 #)
         #return matches
         
+    def is_invalid_ngram(self, w):
+        for i in [0,-1]:
+            if w.split()[i] in self._stopwords or w.split()[i] in punctuation:
+                return True
+        return False
+        
     def _get_all_matches(self, ngrams):
         matches = []
         # add list to capture words that have already been reviewed
@@ -415,9 +422,7 @@ class QuickUMLS(object):
             # iterate through permutations
             for w in perms:
                 
-                
-                if w in reviewed or w.split()[0] in self._stopwords or w.split()[-1] in self._stopwords:
-                
+                if (w in reviewed )or (self.is_invalid_ngram(w)):
                     continue
                 else:
                     reviewed.append(w)
@@ -543,6 +548,8 @@ class QuickUMLS(object):
             List: List of all matches in the text
             TODO: Describe format
         """
+        self.best_match=best_match
+        self.ignore_syntax=ignore_syntax
 
         parsed = self.nlp(u'{}'.format(text))
         
@@ -551,7 +558,7 @@ class QuickUMLS(object):
 
         return matches
         
-    def _match(self, doc, best_match=True, ignore_syntax=False):
+    def _match(self, doc)#, best_match=True, ignore_syntax=False):
         """Gathers ngram matches given a spaCy document object.
 
         [extended_summary]
@@ -568,14 +575,14 @@ class QuickUMLS(object):
         """
         
         ngrams = None
-        if ignore_syntax:
+        if self.ignore_syntax:
             ngrams = self._make_token_sequences(doc)
         else:
             ngrams = self._make_ngrams(doc)
 
         matches = self._get_all_matches(ngrams)
 
-        if best_match:
+        if self.best_match:
             matches = self._select_terms(matches)
 
         self._print_verbose_status(doc, matches)
