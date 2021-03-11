@@ -408,7 +408,7 @@ class QuickUMLS(object):
             prev_cui = None
 
             # generate permutations of length 2 or more for ngram
-            perms = []
+            perms = [str(self.input_text).lower()]
             if len(ngram_normalized.split())>1:
 
                 len_ngrams = len(ngram_normalized.split())
@@ -550,6 +550,9 @@ class QuickUMLS(object):
         """
         self.best_match=best_match
         self.ignore_syntax=ignore_syntax
+        
+        # expanding the window inhibits performance for long strings, so test the original text
+        self.input_text = text
 
         parsed = self.nlp(u'{}'.format(text))
         
