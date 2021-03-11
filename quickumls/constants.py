@@ -66,7 +66,7 @@ ACCEPTED_SEMTYPES = {
     # 'T013', # Fish, ex.: Bass; Salmonidae; Whitefish
     # 'T168', # Food, ex.: Beverages; Egg Yolk (Dietary); Ice Cream
     # 'T021', # Fully Formed Anatomical Structure, ex.: Entire body as a whole; Female human body; Set of parts of human body
-    # 'T169', # Functional Concept, ex.: Interviewer Effect; Problem Formulation; Endogenous
+     'T169', # Functional Concept, ex.: Interviewer Effect; Problem Formulation; Endogenous
      'T004', # Fungus, ex.: Aspergillus clavatus; Blastomyces; Neurospora
     # 'T028', # Gene or Genome, ex.: Alleles; Genome, Human; rRNA Operon
      'T045', # Genetic Function, ex.: Early Gene Transcription; Gene Amplification; RNA Splicing
