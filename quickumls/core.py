@@ -20,7 +20,6 @@ from . import constants
 from itertools import permutations
 from string import punctuation
 
-
 class QuickUMLS(object):
     """The main class to interact with the matcher.
     """
@@ -32,9 +31,7 @@ class QuickUMLS(object):
             verbose=False, keep_uppercase=False,
             spacy_component = False):
         """Instantiate QuickUMLS object
-
             This is the main interface through which text can be processed.
-
         Args:
             quickumls_fp (str): Path to which QuickUMLS was installed
             overlapping_criteria (str, optional):
@@ -56,7 +53,6 @@ class QuickUMLS(object):
                     distinguishing acronyms from normal words. For this the
                     database should be installed without the -L option.
                     Defaults to False.
-
         Raises:
             ValueError: Raises a ValueError if QuickUMLS was installed for a language that is not currently supported TODO: verify this?
             OSError: Raises an OSError if the required Spacy model was not installed.
@@ -177,7 +173,6 @@ class QuickUMLS(object):
 
     def get_info(self):
         """Computes a summary of the matcher options.
-
         Returns:
             Dict: Dictionary containing information on the QuicUMLS instance.
         """
@@ -189,7 +184,6 @@ class QuickUMLS(object):
     @property
     def info(self):
         """Computes a summary of the matcher options.
-
         Returns:
             Dict: Dictionary containing information on the QuicUMLS instance.
         """
@@ -248,6 +242,7 @@ class QuickUMLS(object):
         return (span.end_char - span.start_char) >= self.min_match_length
 
     def _make_ngrams(self, sent):
+
         sent_length = len(sent)
 
         # do not include determiners inside a span
@@ -304,89 +299,17 @@ class QuickUMLS(object):
                             if token.i not in skip_in_span).strip()
                 )
 
-  #  def _get_all_matches(self, ngrams):
-  #      matches = []
-  #      for start, end, ngram in ngrams:
-  #          ngram_normalized = ngram
-
- #           if self.normalize_unicode_flag:
-  #              ngram_normalized = unidecode(ngram_normalized)
-
-            # make it lowercase
-  #          if self.to_lowercase_flag:
-  #              ngram_normalized = ngram_normalized.lower()
-
-            # If the term is all uppercase, it might be the case that
-            # no match is found; so we convert to lowercase;
-            # however, this is never needed if the string is lowercased
-            # in the step above
-    #        if not self.to_lowercase_flag and ngram_normalized.isupper() and not self.keep_uppercase:
-   #             ngram_normalized = ngram_normalized.lower()
-
-     #       prev_cui = None
-     #       ngram_cands = list(self.ss_db.get(ngram_normalized))
-
-     #       ngram_matches = []
-
-      #      for match in ngram_cands:
-      #          cuisem_match = sorted(self.cuisem_db.get(match))
-
-       #         match_similarity = toolbox.get_similarity(
-       #             x=ngram_normalized,
-       #             y=match,
-       #             n=self.ngram_length,
-       #             similarity_name=self.similarity_name
-       #         )
-
-        #        if match_similarity == 0:
-         #               continue
-
-        #        for cui, semtypes, preferred in cuisem_match:
-
-          #          if not self._is_ok_semtype(semtypes):
-           #             continue
-
-            #        if prev_cui is not None and prev_cui == cui:
-            #            if match_similarity > ngram_matches[-1]['similarity']:
-            #                ngram_matches.pop(-1)
-            #            else:
-            #                continue
-
-             #       prev_cui = cui
-
-             #       ngram_matches.append(
-              #          {
-              #              'start': start,
-              #              'end': end,
-              #              'ngram': ngram,
-              #              'term': toolbox.safe_unicode(match),
-              #              'cui': cui,
-              #              'similarity': match_similarity,
-              #              'semtypes': semtypes,
-              #              'preferred': preferred
-               #         }
-               #     )
-
-            #if len(ngram_matches) > 0:
-             #   matches.append(
-              #      sorted(
-               #         ngram_matches,
-                #        key=lambda m: m['similarity'] + m['preferred'],
-                 #       reverse=True
-                 #   )
-                #)
-        #return matches
-        
     def is_invalid_ngram(self, w):
         for i in [0,-1]:
             if w.split()[i] in self._stopwords or w.split()[i] in punctuation:
                 return True
         return False
-        
+
     def _get_all_matches(self, ngrams):
         matches = []
         # add list to capture words that have already been reviewed
         reviewed = []
+
         for start, end, ngram in ngrams:
 
             ngram_normalized = ngram
@@ -417,11 +340,14 @@ class QuickUMLS(object):
             else:
                 perms.append(ngram_normalized)
 
+
+
             ngram_matches = []
 
             # iterate through permutations
             for w in perms:
-                
+
+                # if permutation already reviewed or doesn't pass validation, continue
                 if (w in reviewed )or (self.is_invalid_ngram(w)):
                     continue
                 else:
@@ -469,6 +395,9 @@ class QuickUMLS(object):
                             }
                         )
 
+
+
+
             if len(ngram_matches) > 0:
                 matches.append(
                     sorted(
@@ -478,8 +407,9 @@ class QuickUMLS(object):
                     )
                 )
 
-        return matches
 
+
+        return matches
 
     @staticmethod
     def _select_score(match):
@@ -509,6 +439,7 @@ class QuickUMLS(object):
         return final_matches_subset
 
     def _make_token_sequences(self, parsed):
+
         for i in range(len(parsed)):
             for j in xrange(
                     i + 1, min(i + self.window, len(parsed)) + 1):
@@ -533,50 +464,43 @@ class QuickUMLS(object):
         )
         return True
 
-    def match(self, text, best_match=True, ignore_syntax=False):
+    def match(self, text, best_match=False, ignore_syntax=False):
         """Perform UMLS concept resolution for the given string.
-
         [extended_summary]
-
         Args:
             text (str): Text on which to run the algorithm
-
             best_match (bool, optional): Whether to return only the top match or all overlapping candidates. Defaults to True.
             ignore_syntax (bool, optional): Wether to use the heuristcs introduced in the paper (Soldaini and Goharian, 2016). TODO: clarify,. Defaults to False.
-
         Returns:
             List: List of all matches in the text
             TODO: Describe format
         """
+        # make them attributes so they carry over to _match
         self.best_match=best_match
         self.ignore_syntax=ignore_syntax
-        
+
         # expanding the window inhibits performance for long strings, so test the original text
         self.input_text = text
 
         parsed = self.nlp(u'{}'.format(text))
-        
+
         # pass in parsed spacy doc to get concept matches
         matches = self._match(parsed)
 
         return matches
-        
-    def _match(self, doc)#, best_match=True, ignore_syntax=False):
+
+    def _match(self, doc):#, best_match=False, ignore_syntax=True):
         """Gathers ngram matches given a spaCy document object.
-
         [extended_summary]
-
         Args:
             text (Document): spaCy Document object to be used for extracting ngrams
-
             best_match (bool, optional): Whether to return only the top match or all overlapping candidates. Defaults to True.
             ignore_syntax (bool, optional): Wether to use the heuristcs introduced in the paper (Soldaini and Goharian, 2016). TODO: clarify,. Defaults to False
-
         Returns:
             List: List of all matches in the text
             TODO: Describe format
         """
-        
+
         ngrams = None
         if self.ignore_syntax:
             ngrams = self._make_token_sequences(doc)
@@ -586,8 +510,10 @@ class QuickUMLS(object):
         matches = self._get_all_matches(ngrams)
 
         if self.best_match:
+
             matches = self._select_terms(matches)
 
+
         self._print_verbose_status(doc, matches)
-        
+
         return matches
