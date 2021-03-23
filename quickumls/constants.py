@@ -19,7 +19,7 @@ ACCEPTED_SEMTYPES = {
      'T116', # Amino Acid, Peptide, or Protein, ex.: Amino Acids, Cyclic; Glycopeptides; Keratin
     # 'T011', # Amphibian, ex.: Salamandra; Urodela; Brazilian horned frog
      'T190', # Anatomical Abnormality, ex.: Bronchial Fistula; Foot Deformities; Hyperostosis of skull
-     'T017', # Anatomical Structure, ex.: Cadaver; Pharyngostome; Anatomic structures
+     #'T017', # Anatomical Structure, ex.: Cadaver; Pharyngostome; Anatomic structures
     # 'T008', # Animal, ex.: Animals; Animals, Laboratory; Carnivore
     'T195', # Antibiotic, ex.: Antibiotics; bactericide; Thienamycins
      'T194', # Archaeon, ex.: Thermoproteales; Haloferax volcanii; Methanospirillum
@@ -27,7 +27,7 @@ ACCEPTED_SEMTYPES = {
     # 'T053', # Behavior, ex.: Homing Behavior; Sexuality; Habitat Selection
      'T038', # Biologic Function, ex.: Antibody Formation; Drug resistance; Homeostasis
      'T123', # Biologically Active Substance, ex.: Cytokinins; Pheromone
-      'T091', # Biomedical Occupation or Discipline, ex.: Adolescent Medicine; Cellular Neurobiology; Dentistry
+    #  'T091', # Biomedical Occupation or Discipline, ex.: Adolescent Medicine; Cellular Neurobiology; Dentistry
      'T122', # Biomedical or Dental Material, ex.: Acrylic Resins; Bone Cements; Dentifrices
     # 'T012', # Bird, ex.: Serinus; Ducks; Quail
     'T029', # Body Location or Region, ex.: Forehead; Sublingual Region; Base of skull structure
@@ -36,7 +36,7 @@ ACCEPTED_SEMTYPES = {
     'T031', # Body Substance, ex.: Amniotic Fluid; saliva; Smegma
      'T022', # Body System, ex.: Endocrine system; Renin-angiotensin system; Reticuloendothelial System
     # 'T088', # Carbohydrate Sequence, ex.: Carbohydrate Sequence; Abnormal carbohydrate sequence
-     'T025', # Cell, ex.: B-Lymphocytes; Dendritic Cells; Fibroblasts
+    # 'T025', # Cell, ex.: B-Lymphocytes; Dendritic Cells; Fibroblasts
     # 'T026', # Cell Component, ex.: Axon; Golgi Apparatus; Organelles
     # 'T043', # Cell Function, ex.: Cell Cycle; Cell division; Phagocytosis
     # 'T049', # Cell or Molecular Dysfunction, ex.: DNA Damage; Wallerian Degeneration; Atypical squamous metaplasia
@@ -85,7 +85,7 @@ ACCEPTED_SEMTYPES = {
     'T130', # Indicator, Reagent, or Diagnostic Aid, ex.: Fluorescent Dyes; Indicators and Reagents; India ink stain
     # 'T055', # Individual Behavior, ex.: Assertiveness; Grooming; Risk-Taking
     'T037', # Injury or Poisoning, ex.: Accidental Falls; Carbon Monoxide Poisoning; Snake Bites
-     'T197', # Inorganic Chemical, ex.: Carbonic Acid; aluminum nitride; ferric citrate
+    # 'T197', # Inorganic Chemical, ex.: Carbonic Acid; aluminum nitride; ferric citrate
     'T170', # Intellectual Product, ex.: Decision Support Techniques; Information Systems; Literature
     'T034', # Laboratory or Test Result, ex.: Blood Flow Velocity; Serum Calcium Level; Spinal Fluid Pressure
     'T059', # Laboratory Procedure, ex.: Blood Protein Electrophoresis; Crystallography; Radioimmunoassay
@@ -101,7 +101,7 @@ ACCEPTED_SEMTYPES = {
     # 'T085', # Molecular Sequence, ex.: Genetic Code; Homologous Sequences; Molecular Sequence
     # 'T070', # Natural Phenomenon or Process, ex.: Air Movements; Corrosion; Lightning (phenomenon)
     'T191', # Neoplastic Process, ex.: Abdominal Neoplasms; Bowen's Disease; Polyp in nasopharynx
-     'T114', # Nucleic Acid, Nucleoside, or Nucleotide, ex.: Cytosine Nucleotides; Guanine; Oligonucleotides
+     #'T114', # Nucleic Acid, Nucleoside, or Nucleotide, ex.: Cytosine Nucleotides; Guanine; Oligonucleotides
     # 'T086', # Nucleotide Sequence, ex.: Base Sequence; Direct Repeat; RNA Sequence
     # 'T090', # Occupation or Discipline, ex.: Aviation; Craniology; Ecology
     # 'T057', # Occupational Activity, ex.: Collective Bargaining; Commerce; Containment of Biohazards
