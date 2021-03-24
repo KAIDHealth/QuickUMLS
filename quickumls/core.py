@@ -1,12 +1,7 @@
-# future statements for Python 2 compatibility
-from __future__ import (
-    unicode_literals, division, print_function, absolute_import)
-
 # built in modules
 import os
 import sys
 import datetime
-from six.moves import xrange
 
 # installed modules
 import spacy
@@ -253,7 +248,7 @@ class QuickUMLS(object):
             token.i for token in sent if not self._is_valid_middle_token(token)
         }
 
-        for i in xrange(sent_length):
+        for i in range(sent_length):
             tok = sent[i]
 
             if not self._is_valid_token(tok):
@@ -277,7 +272,7 @@ class QuickUMLS(object):
             ):
                 yield(tok.idx, tok.idx + len(tok), tok.text)
 
-            for j in xrange(i + 1, span_end):
+            for j in range(i + 1, span_end):
                 if compensate:
                     compensate = False
                     continue
@@ -441,7 +436,7 @@ class QuickUMLS(object):
     def _make_token_sequences(self, parsed):
 
         for i in range(len(parsed)):
-            for j in xrange(
+            for j in range(
                     i + 1, min(i + self.window, len(parsed)) + 1):
                 span = parsed[i:j]
 
